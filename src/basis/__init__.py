@@ -142,7 +142,7 @@ def series(*types: Type[Series]) -> Type[Basis]:
         def fn(self, *mode: int, x: X) -> X:
 
             axes = mesh(lambda i, self: self.fn(mode[i], x=x[..., [i]]))
-            return np.product(np.stack(axes, axis=-1), axis=-1)
+            return np.prod(np.stack(axes, axis=-1), axis=-1)
 
         def __getitem__(self, s: Tuple[int]) -> X:
 

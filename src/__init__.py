@@ -48,11 +48,11 @@ e = np.e
 # ---------------------------------------------------------------------------- #
 
 from jax import random
-RNG = Dict[str, random.KeyArray]
+RNG = Dict[str, random.PRNGKey]
 
 class RNGS(RNG):
 
-    def __init__(self, prng: random.KeyArray, name: List[str]):
+    def __init__(self, prng: random.PRNGKey, name: List[str]):
         keys = random.split(prng, len(name))
         super().__init__(zip(name, keys))
 

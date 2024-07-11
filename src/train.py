@@ -15,7 +15,14 @@ def step(self: Trainer, variable: ϴ) -> Tuple[ϴ, Dict[str, X]]:
     @F.partial(jax.grad, has_aux=True)
     def loss(params: ϴ, ϕ: X) -> Tuple[X, Dict[str, X]]:
 
-        loss = self.mod.apply(variable.copy(dict(params=params)), ϕ, method="loss")
+        # TODO: this has been deprecated in later versions
+        # The flax.core.copy() add_or_replace
+        if jax.__version__ == '0.4.7':
+            loss = self.mod.apply(variable.copy(dict(params=params)), ϕ, method="loss")  
+        
+        else:
+            loss = self.mod.apply(dict(variable, params=params), ϕ, method="loss")  # TODO: check, version upgrade
+        
         return jax.tree_util.tree_reduce(O.add, loss), loss
 
     grads, loss = jax.tree_map(F.partial(np.mean, axis=0),
@@ -32,7 +39,11 @@ def step(self: Trainer, variable: ϴ) -> Tuple[ϴ, Dict[str, X]]:
     updates, state = self.optimizer.update(grads, self.get_variable("optim", "state"), params)
 
     self.put_variable("optim", "state", state)
-    return variable.copy(dict(params=optax.apply_updates(params, updates))), loss
+    
+    if jax.__version__ == '0.4.7':
+        return variable.copy(dict(params=optax.apply_updates(params, updates))), loss  #TODO: check, version upgrade
+    else:
+        return dict(variable, params=optax.apply_updates(params, updates)), loss
 
 # ---------------------------------------------------------------------------- #
 #                                     EVAL                                     #

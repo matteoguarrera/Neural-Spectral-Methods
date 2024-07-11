@@ -82,7 +82,7 @@ def generate(pde: ReactionDiffusion, N: int = 128):
 
     dir = os.path.dirname(__file__)
 
-    np.save(f"{dir}/h.npy", params.coef)
+    np.save(f"{dir}/h.{pde}.npy", params.coef)
     np.save(f"{dir}/u.{pde}.npy", u)
 
     return u
